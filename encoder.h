@@ -27,8 +27,8 @@ class ENCODER {
 		uint8_t             fast_increment  = 0;     // The value to change encoder when in runs quickly
         uint8_t             shift_increment = 0;     // The value to change encoder when shift pressed
    		const uint16_t    	fast_timeout    = 300;   // Time in ms to change encoder quickly
-		const uint16_t    	over_press       = 1500;
-        const uint16_t      short_press      = 1000;
+		const uint16_t    	over_press      = 4000;
+        const uint16_t      short_press     = 1000;
 };
 
 #endif

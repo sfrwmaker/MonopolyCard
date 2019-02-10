@@ -21,7 +21,7 @@ class Player {
 
 class Players {
 	public:
-		Players(void)                           { }
+		Players(void)                           { top = 0; }
 		void		init(void);
         bool        exists(uint32_t cid);
 		char* 		name(uint32_t cid);

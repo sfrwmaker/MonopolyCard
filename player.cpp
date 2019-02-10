@@ -68,6 +68,7 @@ int32_t	Players::addMoney(uint32_t cid, int32_t value) {
 }
 
 bool Players::add(const char *Name, uint32_t Cid, int32_t Money) {
+    if (Cid == 0) return false;
     Player *p = instance(Cid);
     if (p) return false;                        // This card ID is already registered
     p = instance(0);                            // Looking for empty slot (after previous game)
@@ -80,6 +81,7 @@ bool Players::add(const char *Name, uint32_t Cid, int32_t Money) {
     }
     if (p == 0) return false;
     p->init(Name, Cid, Money);
+    return true;
 }
 
 uint8_t Players::number(void) {

@@ -14,6 +14,7 @@ class DSPL : public LiquidCrystal {
 		void			playerName(const char *player_name, uint8_t sym_num, bool showCursor = true);
         void            player(const char *Name, int32_t Money, int32_t AddMoney);
         void            transfer(const char *sName, const char *dName, uint32_t Money);
+        void            check(const char *Name1, int32_t Money1, const char *Name2 = 0, int32_t Money2 = 0);
 	private:
 		uint8_t bl_pin, brightness;
 };

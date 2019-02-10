@@ -36,7 +36,6 @@ class NewGame: public MODE {
 		ENCODER			*pEnc;
 		Players			*p;
 		MFRC522			*pRF;
-		uint8_t			player;
 		uint8_t			mode;					// 0 - wait for new card, 1 - select letter, 2 - edit letter
 		uint32_t		card_id;				// User CARD ID
 		uint8_t			sym_num;				// Index of the symbol in user name to edit

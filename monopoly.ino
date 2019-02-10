@@ -100,7 +100,6 @@ void loop() {
 
         case 0:                     // Not pressed
         default:
-            nxt = pCurrMode->show();
             break;
     }
 
@@ -112,4 +111,15 @@ void loop() {
         lcd.clear();
         pCurrMode->forceRedraw();
     }
+
+    nxt = pCurrMode->show();
+    if (!nxt) nxt = &confirmMode;
+    if (nxt != pCurrMode) {
+        pCurrMode = nxt;
+        pCurrMode->init();
+        old_pos = rEnc.read();
+        lcd.clear();
+        pCurrMode->forceRedraw();
+    }
+    delay(30);
 }

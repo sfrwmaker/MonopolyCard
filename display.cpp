@@ -81,3 +81,21 @@ void DSPL::transfer(const char *sName, const char *dName, uint32_t Money) {
     setCursor(0, 1);
     print(buff);
 }
+
+void DSPL::check(const char *Name1, int32_t Money1, const char *Name2, int32_t Money2) {
+    clear();
+    char buff[18];
+    sprintf(buff, "%s,", Name1);
+    print(buff);
+    setCursor(8, 0);
+    sprintf(buff, " $%6d", Money1);
+    print(buff);
+    if (Name2) {
+        setCursor(0, 1);
+        sprintf(buff, "%s,", Name2);
+        print(buff);
+        setCursor(8, 1);
+        sprintf(buff, " $%6d", Money2);
+        print(buff);
+    }
+}

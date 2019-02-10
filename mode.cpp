@@ -8,15 +8,13 @@ NewGame::NewGame(DSPL *Disp, ENCODER *Enc, Players *Play, MFRC522 *RF) {
 	pEnc		= Enc;
 	p			= Play;
 	pRF			= RF;
-	player		= 0;
 	mode		= 0;
 	pEnc->reset(0, 0, 0, 0, 0, 0, false);
 }
 
 void NewGame::init(void) {
 	p->init();
-	player	= 0;
-	mode 	= 0;
+	mode 	= 0;                                // 0 - wait for new card, 1 - select letter, 2 - edit letter
 	card_id = 0;
     select_timeout  = 0;
 	pEnc->reset(pD->getBackLight(), 0, 255, 5, 20, 50, false);    // Prepare to tune LCD backlight brightness
@@ -65,6 +63,7 @@ MODE* NewGame::show(void) {
 		case 1:									// Select symbol in the name to be changed
             pD->setCursor(13, 0);
             pD->print("<->");
+
 		case 2:									// Edit the symbol in the name, do not show cursor
 			pD->playerName(player_name, sym_num);
 			break;
@@ -103,10 +102,10 @@ MODE* NewGame::press(void) {
     forceRedraw();
 
 	switch(mode) {
-		case 1:									// Switch to the edit mode
+		case 1:									// Letter select mode
 			break;
 
-		case 2:									// Switch to the select mode
+		case 2:									// Letter edit mode, choose next letter
             if (++sym_num >= PLAYER_NAME_LENGTH-1)
                 sym_num = PLAYER_NAME_LENGTH-1;
 			break;
@@ -124,13 +123,21 @@ MODE* NewGame::longPress(void) {
     pD->clear();
     pD->noCursor();
 
-	if (mode) {
-		p->add(player_name, card_id);
-		mode = 0;
+	if (mode > 0) {                             // Register new player
+		if (!p->add(player_name, card_id)) {
+            pD->clear();
+            pD->print(F("Registration"));
+            pD->setCursor(1, 1);
+            pD->print(F("failed"));
+            delay(2000);
+            pD->clear();
+		}
+		mode    = 0;
+        card_id = 0;
 		pEnc->reset(pD->getBackLight(), 0, 255, 5, 20, 50, false);    // Prepare to tune LCD backlight brightness
 		forceRedraw();
 		return this;
-	} else {
+	} else {                                    // Finish registering, start the game
         if (p->number() < 2) {
             pD->print(F("Insufficient"));
             pD->setCursor(1, 1);
@@ -173,7 +180,7 @@ char NewGame::codeToSymbol(uint8_t code) {
 void NewGame::playerInit(void) {
 	sym_num = 0;
 	for (uint8_t i = 1; i < PLAYER_NAME_LENGTH; player_name[i++] = ' ');
-    player_name[0] = 'M';
+    player_name[0] = 'A';
 	player_name[PLAYER_NAME_LENGTH] = '\0';
 }
 
@@ -284,6 +291,8 @@ MODE* Move::show(void) {
             p->addMoney(dest_card_id, add_money);
             pD->transfer(p->name(p_card_id), p->name(dest_card_id), uint32_t(add_money));
             delay(2000);                        // Wait to show transfer message
+            pD->check(p->name(p_card_id), p->money(p_card_id), p->name(dest_card_id), p->money(dest_card_id));
+            delay(3000);
             if (next) return next; else return this;
         }        
     }
@@ -301,6 +310,10 @@ MODE* Move::show(void) {
 
 MODE* Move::press(void) {
 	p->addMoney(p_card_id, add_money);
+    if (add_money != 0) {
+        pD->check(p->name(p_card_id), p->money(p_card_id));
+        delay(3000);
+    }
 	if (next) return next; else return this;
 }
 
